@@ -12,16 +12,24 @@ public class ChuckNorris : MonoBehaviour
 {
     public TextMeshProUGUI jokeText;
     public VideoPlayer video;
+    public int likes;
+    public int dislikes;
 
     public Joke[] jokesList;
 
     public Button openCloseNextVideos;
 
     [SerializeField] Transform nextVideoParent;
+    [SerializeField] Transform nextVideoContent;
     [SerializeField] GameObject nextVideoPrefab;
+
+    GetOtherVideo getOtherVideo = null;
+
+    public static ChuckNorris instance; 
 
     private void Start()
     {
+        instance = this;
         /*Joke[] jokes = APIHelper.GetSomeJokes();
         Debug.Log(jokes.Length);*/
 
@@ -33,7 +41,6 @@ public class ChuckNorris : MonoBehaviour
         openCloseNextVideos.onClick.AddListener(() => OpenCloseVideos());
 
         NewJoke();
-        GetNextVideos();
     }
 
     public void OpenCloseVideos()
@@ -48,11 +55,28 @@ public class ChuckNorris : MonoBehaviour
 
         Debug.Log(j.value);
         //video.url = j.source;
+
+        GetNextVideos();
+    }
+
+    public void GetChosenVideo(string chosenTitle, VideoSource chosenVideo, int chosenLikes, int chosenDislikes)
+    {
+        jokeText.text = chosenTitle;
+        video.source = chosenVideo;
+        likes = chosenLikes;
+        dislikes = chosenDislikes;
+
+        GetNextVideos();
     }
 
     public void GetNextVideos()
     {
-        int numberOfVideos = 5;
+        for (int i = 0; i < nextVideoContent.childCount; i++)
+        {
+            Destroy(nextVideoContent.GetChild(i).gameObject);
+        }
+
+        int numberOfVideos = 10;
 
         /*if (jokesList.Length >= 10)
         {
@@ -65,11 +89,21 @@ public class ChuckNorris : MonoBehaviour
 
         for (int i = 0; i < numberOfVideos; i++)
         {
-             GameObject currentVideo = Instantiate(nextVideoPrefab, nextVideoParent);
+             GameObject currentVideo = Instantiate(nextVideoPrefab, nextVideoContent);
             /*currentVideo.GetComponent<TextMeshProUGUI>().text = jokesList[i].title;*/
 
+            getOtherVideo = currentVideo.GetComponent<GetOtherVideo>();
+
             Joke j = APIHelper.GetNewJoke();
-            currentVideo.GetComponentInChildren<TextMeshProUGUI>().text = j.value;
+
+            if (j.value == jokeText.text)
+            {
+                j = APIHelper.GetNewJoke();
+            }
+
+            getOtherVideo.videoTitle.text = j.value;
+            /*getOtherVideo.videoImage = j.thumbnail;
+            getOtherVideo.video = j.video;*/
         }
     }
 }
