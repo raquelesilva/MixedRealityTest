@@ -50,11 +50,21 @@ public class ChuckNorris : MonoBehaviour
 
     public void NewJoke()
     {
-        Joke j = APIHelper.GetNewJoke();
+        /*Joke j = APIHelper.GetNewJoke();
         jokeText.text = j.value;
 
         Debug.Log(j.value);
-        //video.url = j.source;
+        Debug.Log("source: " + j.source);
+        video.url = j.source;
+
+        GetNextVideos();*/
+
+        VideoData v = APIHelper.GetVideo();
+        jokeText.text = v.title;
+
+        Debug.Log(v.title);
+        Debug.Log("videoId: " + v.videoId);
+        video.url = v.videoId;
 
         GetNextVideos();
     }
@@ -94,14 +104,21 @@ public class ChuckNorris : MonoBehaviour
 
             getOtherVideo = currentVideo.GetComponent<GetOtherVideo>();
 
-            Joke j = APIHelper.GetNewJoke();
+            /*Joke j = APIHelper.GetNewJoke();
 
             if (j.value == jokeText.text)
             {
                 j = APIHelper.GetNewJoke();
+            }*/
+            
+            VideoData v = APIHelper.GetVideo();
+
+            if (v.title == jokeText.text)
+            {
+                v = APIHelper.GetVideo();
             }
 
-            getOtherVideo.videoTitle.text = j.value;
+            getOtherVideo.videoTitle.text = v.title;
             /*getOtherVideo.videoImage = j.thumbnail;
             getOtherVideo.video = j.video;*/
         }
